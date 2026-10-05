@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app"
+        class="flex justify-center items-center w-full h-screen bg-[url('https://i.pinimg.com/1200x/d2/1f/93/d21f93e06d74ea568e7c7d13ff68baf4.jpg')] bg-cover bg-center">
+        <div class="flex flex-col justify-center items-center gap-10">
+            <h1 class="font-sans text-5xl font-black py-5">Guess the Word</h1>
+            <div class="text-5xl text-center mb-5 text-slate-800">
+                {{displayArea.join(" ")}}
+            </div>
+            <div class="space-y-3">
+                <div v-for="row, i in letters" :key="i" class="flex justify-center gap-3">
+                    <button v-for="letter in row" :key="letter" @click="press(letter)"
+                        :class="['px-7 py-5 bg-slate-700 text-white font-semibold border border-slate-800 font-sans rounded-lg text-2xl hover:bg-slate-400 hover:border hover:border-white',
+                         usedLetters.includes(letter)
+                         ?'bg-gray-400 cursor-not-allowed opacity-50'
+                         :'bg-blue-300 cursor-pointer'
+                        ]">
+                        {{letter}}
+                    </button>
+                </div>
+            </div>
+            <div>
+                <h1 class="font-sans text-xl font-semibold text-center text-slate-800">{{message}}</h1>
+            </div>
+            <button @click="resetGame"
+                class="px-4 py-2 bg-slate-600 fomt-sans text-lg rounded-full text-white hover:scale-110 hover:duration-300 cursor-pointer">Restart</button>
+        </div>
+    </div>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    letters: [
+                        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                        ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+                    ],
+
+                    displayArea: [" _ ", " _ ", " _ ", " _ ", " _ "],
+                    words: ["TIGER", "SPEED", "COLOR", "APPLE", "MELON"],
+                    usedLetters: [],
+                    randomValue: "",
+                    message: "",
+                }
+            },
+            methods: {
+                randomwords() {
+                    let random = Math.floor(Math.random() * this.words.length);
+                    return this.words[random];
+
+                },
+                press(letter) {
+                    if(this.usedLetters.includes(letter)) return
+                    this.usedLetters.push(letter);
+                    for (let i = 0; i < this.randomValue.length; i++) {
+                        if (this.randomValue[i] === letter) {
+                            this.displayArea[i] = letter;
+                        }
+                    }
+                    this.isWinner();
+                },
+
+                isWinner() {
+                    if (this.displayArea.join("") === this.randomValue) {
+                        this.message = 'You win!'
+                    }
+                },
+
+                resetGame(){
+                    this.randomValue = this.randomwords()
+                    this.displayArea = [" _ ", " _ ", " _ ", " _ ", " _ "];
+                    this.usedLetters = [];
+                    this.message = '';
+                }
+            },
+            mounted() {
+                this.randomValue = this.randomwords();
+              
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
